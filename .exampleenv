@@ -1,6 +1,0 @@
-make a file named .env with the following variables
-
-HOST=""
-USER=""
-PASSWORD=""
-DATABASE=""
