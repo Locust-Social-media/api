@@ -39,6 +39,13 @@ app.get('/post/:id', (req, res) => {
   });
 });
 
+app.get('/comment/:id', (req, res) => {
+  const { id } = req.params;
+  pool.query('SELECT * FROM comment WHERE postID = ?', [id], (err, results) => {
+    if (err) return res.status(500).json(err);
+    res.json(results);
+  });
+});
 
 app.post('/post', (req, res) => {
   const { userID, title, bodyText } = req.body;
@@ -61,6 +68,26 @@ app.post('/post', (req, res) => {
   });
 });
 
+app.post('/comment', (req, res) => {
+  const { userID, postID, bodyText } = req.body;
+
+
+  if (!userID || !postID || !bodyText) {
+    return res.status(400).json({ error: 'userID, postID and bodyText are required' });
+  }
+
+  const sql = 'INSERT INTO comment (users_ID, postID, Text) VALUES (?, ?, ?)';
+  const params = [userID, postID, bodyText];
+
+  pool.query(sql, params, (err, results) => {
+    if (err) return res.status(500).json(err);
+
+    res.status(201).json({
+      message: 'comment created',
+      postID: results.insertId
+    });
+  });
+});
 
 app.get('/', (req, res) => {
   res.send('API is running');
